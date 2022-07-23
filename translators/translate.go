@@ -1,4 +1,4 @@
-package main
+package translators
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func Translate(source, sourceLng, targetLng string) (string, error) {
+func translate(source, sourceLng, targetLng string) (string, error) {
 
 	sourceEncoded := url.QueryEscape(source)
 

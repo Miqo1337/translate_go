@@ -1,9 +1,14 @@
-package main
+package processors
 
 import (
 	"io/ioutil"
 	"log"
+	"regexp"
+	"translator/translators"
 )
+
+var patterns []*regexp.Regexp
+var textsTobeTranslated []string
 
 func processFile(file string) {
 	log.Printf("Starting to process %s", file)
@@ -14,7 +19,15 @@ func processFile(file string) {
 		log.Printf("Error opening the file %s: %s", file, err)
 	}
 
+	patterns = []*regexp.Regexp{
+		//regexp.MustCompile(`<Translate[^>]*>[\n\r\s]*(.*?)[\n\r\s]*</Translate>`), ///matches only a single line
+		regexp.MustCompile(`<Translate[^>]*>[\n\r\s]*((.|\n)*)[\n\r\s]*</Translate>`),
+		regexp.MustCompile(`[:=]\s*'(.+)'\s*,?\s*//\s*:translate`),
+		regexp.MustCompile(`\Wt\('([^']*)'.*\)\W?`),
+	}
+
 	for _, rgexp := range patterns {
+
 		matches := rgexp.FindAllStringSubmatch(string(data), -1)
 
 		if len(matches) == 0 {
@@ -32,15 +45,7 @@ func processFile(file string) {
 					continue
 				}
 			}
-			if _, exists := translations[text]; !exists {
-				translation, e := translateText(lng, text)
-
-				if e != nil {
-					log.Printf("Cannot translate text to %s: %s", lng, e)
-				}
-				translations[text] = translation
-				log.Printf("Added new translation text:\n %s", translation)
-			}
+			translators.TranslateText(translators.Lng, text)
 		}
 	}
 }

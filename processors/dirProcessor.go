@@ -1,4 +1,4 @@
-package main
+package processors
 
 import (
 	"os"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func processDir(dir string) error {
+func ProcessDir(dir string) error {
 	return filepath.WalkDir(dir, func(path string, dirEnt os.DirEntry, err error) error {
 
 		_, file := filepath.Split(path)

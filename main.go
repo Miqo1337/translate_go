@@ -6,53 +6,58 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"regexp"
+	"os"
+	"translator/jsonMarshaller"
+	"translator/processors"
+	"translator/translators"
 )
 
-var src, lng string
+var src string
 var exitstingTranslationfile string
-
-var patterns []*regexp.Regexp
-var translations map[string]string
 
 func init() {
 	srcArg := flag.String("src", "", "directory with source files(absolute path)")
 	lngArg := flag.String("lng", "ru", "target language(alpha-2 code)")
 	flag.Parse()
 	src = *srcArg
-	lng = *lngArg
+	translators.Lng = *lngArg
+
+	//logger.LogfileInit()
+
 }
 
 func main() {
+
+	file, err := os.OpenFile("logfile", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("unable to set logfile: %v\n", err)
+	}
+	defer file.Close()
+
+	log.SetOutput(file)
+
 	if src == "" {
 		log.Fatal("No source specified\n")
 	}
 
-	exitstingTranslationfile = fmt.Sprintf("translations_%s.json", lng)
-	log.Printf("translating into %s", lng)
-
-	patterns = []*regexp.Regexp{
-		//regexp.MustCompile(`<Translate[^>]*>[\n\r\s]*(.*?)[\n\r\s]*</Translate>`), ///matches only a single line
-		regexp.MustCompile(`<Translate[^>]*>[\n\r\s]*((.|\n)*)[\n\r\s]*</Translate>`),
-		regexp.MustCompile(`[:=]\s*'(.+)'\s*,?\s*//\s*:translate`),
-		regexp.MustCompile(`\Wt\('([^']*)'.*\)\W?`),
-	}
+	exitstingTranslationfile = fmt.Sprintf("translations_%s.json", translators.Lng)
+	log.Printf("translating into %s", translators.Lng)
 
 	dataFromFile, err := ioutil.ReadFile(exitstingTranslationfile)
 	if err != nil {
 		log.Printf("Could not not read from file %s: "+
 			"\n\t Error: %s \n"+
 			"\tWill create a new one", exitstingTranslationfile, err)
-		translations = make(map[string]string)
+		translators.Translations = make(map[string]string)
 	} else {
-		if err = json.Unmarshal(dataFromFile, &translations); err != nil {
+		if err = json.Unmarshal(dataFromFile, &(translators.Translations)); err != nil {
 			log.Fatalf("Cannot unmarshal existing translation file: %s", err)
 		}
 	}
 
-	err = processDir(src)
+	err = processors.ProcessDir(src)
 	log.Printf("finished processing: %s", err)
-	transJson, err := JSONMarshal(translations)
+	transJson, err := jsonMarshaller.JSONMarshal(translators.Translations)
 	if err != nil {
 		log.Printf("cannot encode translations: %s", err)
 	}

@@ -7,9 +7,9 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"translator/marshaller"
-	"translator/processors"
-	"translator/translators"
+	"translator/pkg/marshaller"
+	"translator/pkg/processors"
+	"translator/pkg/translators"
 )
 
 var src string

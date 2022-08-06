@@ -1,3 +1,4 @@
 *.json
 *_two.go
 logfile
+_*.go

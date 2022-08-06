@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"regexp"
+	"strings"
 	"translator/translators"
 )
 
@@ -38,6 +39,7 @@ func processFile(file string) {
 			text := m[1]
 			textLength := len(text)
 
+			text = strings.Trim(text, "\n")
 			if text[0] == '{' && text[textLength-1] == '}' {
 				if textLength > 4 && text[1] == '\'' && text[textLength-2] == '\'' {
 					text = text[2 : textLength-2]

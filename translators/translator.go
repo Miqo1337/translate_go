@@ -3,6 +3,7 @@ package translators
 import "log"
 
 var Translations map[string]string
+
 var Lng string
 
 func TranslateText(lng string, text string) {

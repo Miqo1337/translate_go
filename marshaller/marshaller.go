@@ -1,4 +1,4 @@
-package jsonMarshaller
+package marshaller
 
 import (
 	"bytes"

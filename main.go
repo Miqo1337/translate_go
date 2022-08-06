@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"translator/jsonMarshaller"
+	"translator/marshaller"
 	"translator/processors"
 	"translator/translators"
 )
@@ -21,9 +21,7 @@ func init() {
 	flag.Parse()
 	src = *srcArg
 	translators.Lng = *lngArg
-
 	//logger.LogfileInit()
-
 }
 
 func main() {
@@ -57,7 +55,7 @@ func main() {
 
 	err = processors.ProcessDir(src)
 	log.Printf("finished processing: %s", err)
-	transJson, err := jsonMarshaller.JSONMarshal(translators.Translations)
+	transJson, err := marshaller.JSONMarshal(translators.Translations)
 	if err != nil {
 		log.Printf("cannot encode translations: %s", err)
 	}

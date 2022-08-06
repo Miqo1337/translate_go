@@ -5,11 +5,12 @@ import (
 	"log"
 	"regexp"
 	"strings"
-	"translator/translators"
+	"translator/pkg/translators"
 )
 
 var patterns []*regexp.Regexp
-var textsTobeTranslated []string
+
+//var textsTobeTranslated []string
 
 func processFile(file string) {
 	log.Printf("Starting to process %s", file)
@@ -39,7 +40,8 @@ func processFile(file string) {
 			text := m[1]
 			textLength := len(text)
 
-			text = strings.Trim(text, "\n")
+			//text = strings.Trim(text, "\n")
+			text = strings.ReplaceAll(text, "\n", "")
 			if text[0] == '{' && text[textLength-1] == '}' {
 				if textLength > 4 && text[1] == '\'' && text[textLength-2] == '\'' {
 					text = text[2 : textLength-2]
